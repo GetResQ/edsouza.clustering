@@ -12,10 +12,6 @@ points = [
 ]
 
 
-def first(l):
-    return next(iter(l))
-
-
 def distance(p1, p2):
     return abs(p1 - p2)
 
@@ -25,7 +21,7 @@ class Cluster:
         self.clusters = frozenset()
         self.points = frozenset()
         if points:
-            self.points = self.points | set(points)
+            self.points = self.points | frozenset(points)
         if clusters:
             self.clusters = self.clusters | clusters
             for cluster in clusters:
@@ -44,12 +40,9 @@ class Cluster:
         return f'[{", ".join(map(str, self.points))}]'
 
     def distanceTo(self, c):
-        max_distance = distance(first(self.points), first(c.points))
-
-        for (p1, p2) in zip(self.points, c.points):
-            max_distance = max(max_distance, distance(p1, p2))
-
-        return max_distance
+        return max(
+            distance(p1, p2)
+            for (p1, p2) in itertools.product(self.points, c.points))
 
     def mergeWith(self, c):
         new_cluster = Cluster(
@@ -72,19 +65,16 @@ class DistanceMatrix:
         return f'D({self.columns})'
 
     def pairs(self):
-        return [(c1, c2)
-                for (c1, c2) in itertools.product(self.columns, self.rows)
-                if c1 != c2]
+        return filter(
+            lambda pair: pair[0] != pair[1],
+            itertools.product(self.columns, self.rows),
+        )
 
     def closest_cluster_pair(self):
-        pairs = self.pairs()
-        smallest = pairs[0]
-
-        for (c1, c2) in pairs:
-            if c1.distanceTo(c2) < smallest[0].distanceTo(smallest[1]):
-                smallest = (c1, c2)
-
-        return smallest
+        return min(
+            self.pairs(),
+            key=lambda pair: pair[0].distanceTo(pair[1]),
+        )
 
     def remove(self, cluster):
         assert cluster in self.columns
