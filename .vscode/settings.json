@@ -1,0 +1,6 @@
+{
+    "python.pythonPath": "/Users/ed/.local/share/virtualenvs/clustering-K7xWT9V-/bin/python",
+    "editor.formatOnSave": true,
+    "python.formatting.provider": "yapf",
+    "editor.renderWhitespace": "none"
+}
