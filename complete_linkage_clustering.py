@@ -78,9 +78,6 @@ class DistanceMatrix:
 
     def closest_cluster_pair(self):
         pairs = self.pairs()
-        if not pairs:
-            pdb.set_trace()
-
         smallest = pairs[0]
 
         for (c1, c2) in pairs:
